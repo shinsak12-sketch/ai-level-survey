@@ -1,5 +1,5 @@
 import { query, roomOf } from '../lib/db.js';
-import { clean, grade, isPaid, GROUPS } from '../public/survey.js';
+import { clean, grade, isPaid } from '../public/survey.js';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'POST만 받아요' });
@@ -9,11 +9,9 @@ export default async function handler(req, res) {
     const cid = String(body.cid || '').slice(0, 64);
     if (cid.length < 8) return res.status(400).json({ error: '잘못된 요청이에요' });
     const name = String(body.name || '').replace(/\s+/g, ' ').trim().slice(0, 12);
-    const g = Number(body.group);
-    const grp = Number.isInteger(g) && g >= 1 && g <= GROUPS ? g : null;
     const answers = clean(body.answers);
     const { score, level } = grade(answers);
-    const uses = answers.uses.filter((k) => k !== 'none');
+    const feats = answers.feats.filter((k) => k !== 'none'); // 써 본 기능 (uses 칸에 저장)
 
     await query(
       `INSERT INTO responses (room, cid, name, grp, answers, score, level, paid, uses, wish)
@@ -22,7 +20,7 @@ export default async function handler(req, res) {
          name = EXCLUDED.name, grp = EXCLUDED.grp, answers = EXCLUDED.answers,
          score = EXCLUDED.score, level = EXCLUDED.level, paid = EXCLUDED.paid,
          uses = EXCLUDED.uses, wish = EXCLUDED.wish, updated_at = now()`,
-      [room, cid, name, grp, JSON.stringify(answers), score, level, isPaid(answers), uses, answers.wish],
+      [room, cid, name, null, JSON.stringify(answers), score, level, isPaid(answers), feats, answers.wish],
     );
 
     const [r] = await query(

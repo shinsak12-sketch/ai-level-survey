@@ -122,7 +122,7 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
       <div class="gright">
         <div class="big-k">지금까지 참여</div>
         <div class="big-n"><span id="gCount">0</span><small>명</small></div>
-        <div class="big-sub">휴대폰 카메라로 QR을 찍으면 바로 시작해요 · 8문항 1분</div>
+        <div class="big-sub">휴대폰 카메라로 QR을 찍으면 바로 시작해요 · 11문항 2분</div>
         <div class="joined" id="joined"></div>
         <div class="hint"><kbd>Space</kbd> 결과 공개 <kbd>F</kbd> 전체 화면 <kbd>W</kbd> 한 줄 의견 숨기기</div>
       </div>
@@ -133,14 +133,14 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
         <div class="kpi"><span>참여</span><b id="kCount">0<small>명</small></b></div>
         <div class="kpi"><span>평균 등급</span><b id="kAvg">-</b></div>
         <div class="kpi"><span>유료 AI 사용</span><b id="kPaid">0<small>명</small></b></div>
-        <div class="kpi"><span>제작형 이상 (Lv.2+)</span><b id="kMaker">0<small>명</small></b></div>
+        <div class="kpi"><span>"뻔하다" 실망해 봤다</span><b id="kMeh">0<small>명</small></b></div>
         <div class="miniqr"><div id="qr2"></div></div>
       </div>
       <div class="panel">
         <h3>등급 분포 <small id="lvNote"></small></h3>
         <div class="levels" id="levels"></div>
       </div>
-      <div class="panel"><h3>주로 쓰는 곳 <small>복수 응답 · 명</small></h3><div class="hbars" id="uses"></div></div>
+      <div class="panel"><h3>써 본 기능 <small>복수 응답 · 명</small></h3><div class="hbars" id="uses"></div></div>
     </section>
   </main>
 
@@ -156,7 +156,7 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 </dialog>
 
 <script type="module">
-import { QUESTIONS, LEVELS, GROUPS, MAX_SCORE, defaultRoom } from './survey.js';
+import { QUESTIONS, LEVELS, MAX_SCORE, defaultRoom } from './survey.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -242,15 +242,15 @@ function applyRoom() {
 }
 
 // ---------- 그리기
-const USES = QUESTIONS.find((q) => q.id === 'uses').options.filter((o) => o.key !== 'none');
+const FEATS = QUESTIONS.find((q) => q.id === 'feats').options.filter((o) => !o.exclusive);
 
 function render(d, force) {
   $('gCount').textContent = d.count;
   // 모집 화면: 새로 들어온 사람 칩 (최근 순, 최대 30)
   const box = $('joined');
-  const fresh = d.recent.filter((r) => !seen.has(`${r.at}|${r.name}|${r.grp}`)).reverse();
+  const fresh = d.recent.filter((r) => !seen.has(`${r.at}|${r.name}`)).reverse();
   for (const r of fresh) {
-    seen.add(`${r.at}|${r.name}|${r.grp}`);
+    seen.add(`${r.at}|${r.name}`);
     const el = document.createElement('div');
     el.className = 'chip';
     el.innerHTML = `<span class="g">${esc((r.name || '익').slice(0, 1))}</span>${esc(r.name || '익명')}`;
@@ -265,8 +265,7 @@ function render(d, force) {
   $('kCount').innerHTML = `${d.count}<small>명</small>`;
   $('kAvg').innerHTML = avgLv == null ? '-' : `Lv.${avgLv.toFixed(1)}`;
   $('kPaid').innerHTML = `${d.paid}<small>명${d.count ? ` · ${Math.round((d.paid / d.count) * 100)}%` : ''}</small>`;
-  const maker = d.levels[2] + d.levels[3];
-  $('kMaker').innerHTML = `${maker}<small>명${d.count ? ` · ${Math.round((maker / d.count) * 100)}%` : ''}</small>`;
+  $('kMeh').innerHTML = `${d.meh || 0}<small>명${d.mehN ? ` · ${Math.round((d.meh / d.mehN) * 100)}%` : ''}</small>`;
   $('lvNote').textContent = d.count ? `평균 ${d.avgScore.toFixed(1)}점 / ${MAX_SCORE}점` : '';
 
   // 등급 분포 (막대 길이 = 인원, 최대값 기준)
@@ -280,8 +279,8 @@ function render(d, force) {
       <div class="lvval"><b>${n}</b><span>명 · ${pct}%</span></div></div>`;
   }).join('');
 
-  // 주로 쓰는 곳 (많은 순)
-  const uses = USES.map((o) => ({ label: o.label, n: d.uses[o.key] || 0 })).sort((a, b) => b.n - a.n);
+  // 써 본 기능 (많은 순)
+  const uses = FEATS.map((o) => ({ label: o.short || o.label, n: d.feats[o.key] || 0 })).sort((a, b) => b.n - a.n);
   const maxU = Math.max(1, ...uses.map((u) => u.n));
   $('uses').innerHTML = uses.map((u) => `<div class="hb"><span>${esc(u.label)}</span><div class="t"><i data-w="${(u.n / maxU) * 100}"></i></div><b>${u.n}</b></div>`).join('');
 

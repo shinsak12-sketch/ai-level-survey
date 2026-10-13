@@ -1,7 +1,7 @@
 // 설문 문항·점수·등급 정의. 브라우저(index.html)와 서버(api/submit.js)가 같이 쓴다.
 
-export const GROUPS = 8;
-
+// 문항 구성: 경험(넓이) · 상황(깊이) · 마음(점수 없음)
+// noScore: 점수에 안 들어감(강사 화면 통계용) / scoreBy:'count': 고른 개수로 점수
 export const QUESTIONS = [
   {
     id: 'freq',
@@ -14,69 +14,106 @@ export const QUESTIONS = [
     ],
   },
   {
-    id: 'uses',
-    title: '주로 어디에 쓰나요?',
-    hint: '해당하는 것 모두',
-    multi: true,
-    options: [
-      { key: 'search', label: '검색 대신 질문', score: 1 },
-      { key: 'write', label: '문서·메일 작성', score: 2 },
-      { key: 'summary', label: '요약·번역', score: 1 },
-      { key: 'excel', label: '엑셀·수식·표', score: 2 },
-      { key: 'image', label: '이미지·영상 만들기', score: 2 },
-      { key: 'code', label: '프로그램·웹페이지 만들기', score: 3 },
-      { key: 'auto', label: '반복 업무 자동화', score: 3 },
-      { key: 'none', label: '아직 없다', score: 0, exclusive: true },
-    ],
-  },
-  {
     id: 'paid',
     title: '유료 AI를 쓰고 있나요?',
+    noScore: true,
     options: [
-      { label: '아니요, 무료만', score: 0 },
-      { label: '써 봤다가 해지했다', score: 1 },
-      { label: '하나 쓰고 있다', score: 2, paid: true },
-      { label: '두 개 이상 쓴다', score: 3, paid: true },
+      { label: '무료만 쓴다' },
+      { label: '써 봤다가 해지했다' },
+      { label: '하나 쓰고 있다', paid: true },
+      { label: '두 개 이상 쓴다', paid: true },
     ],
   },
   {
-    id: 'prompt',
-    title: 'AI에게 일을 시킬 때 나는?',
+    id: 'feats',
+    title: '써 본 기능을 모두 골라 주세요',
+    hint: '해당하는 것 모두',
+    multi: true,
+    oneCol: true,
+    scoreBy: 'count',
     options: [
-      { label: '시켜 본 적이 별로 없다', score: 0 },
-      { label: '검색어처럼 짧게 묻는다', score: 1 },
-      { label: '상황과 조건을 설명하고 부탁한다', score: 2 },
-      { label: '예시·양식까지 주고 결과 형식을 정한다', score: 3 },
+      { key: 'file', label: '파일(엑셀·PDF·사진) 올려서 시키기', short: '파일 올려서 시키기' },
+      { key: 'out', label: '결과를 파일로 받기(엑셀·PPT·문서)', short: '결과를 파일로 받기' },
+      { key: 'image', label: '이미지 만들기', short: '이미지 만들기' },
+      { key: 'voice', label: '음성으로 대화하기', short: '음성 대화' },
+      { key: 'memory', label: '맞춤 지침·메모리 설정', short: '맞춤 지침·메모리' },
+      { key: 'project', label: '프로젝트(자료 모아 두고 쓰기)', short: '프로젝트' },
+      { key: 'skill', label: '스킬·GPTs(나만의 AI 만들기)', short: '스킬·GPTs' },
+      { key: 'research', label: '딥 리서치(조사 맡기기)', short: '딥 리서치' },
+      { key: 'vibe', label: '바이브코딩(말로 프로그램 만들기)', short: '바이브코딩' },
+      { key: 'none', label: '아직 없음', exclusive: true },
     ],
   },
   {
-    id: 'retry',
-    title: '답이 마음에 안 들면?',
+    id: 'ctx',
+    title: '주말 1박 2일 여행지를 물었더니 "가평, 춘천"처럼 뻔한 답이 나왔다. 나는?',
+    hint: '이런 경험이 없다면, 그런 일이 생기면 어떻게 할지',
     options: [
-      { label: '그냥 닫는다', score: 0 },
-      { label: '복사해서 내가 고친다', score: 1 },
-      { label: '다시 해 달라고 한 번 더 묻는다', score: 2 },
-      { label: '원하는 결과가 나올 때까지 대화로 다듬는다', score: 3 },
+      { label: '원래 이 정도겠지 하고 닫는다', score: 0 },
+      { label: '검색창이나 블로그에서 다시 찾는다', score: 1 },
+      { label: '"다른 데 더 알려 줘"라고 다시 묻는다', score: 2 },
+      { label: '인원·예산·이동 수단·취향을 알려 주고 다시 부탁한다', score: 3 },
+    ],
+  },
+  {
+    id: 'delegate',
+    title: '내일 아침까지 주간 보고서를 내야 한다. AI를 쓴다면?',
+    options: [
+      { label: '안 쓴다, 내가 쓰는 게 빠르다', score: 0 },
+      { label: '문장 몇 개 다듬는 데만 쓴다', score: 1 },
+      { label: '메모를 붙여 넣고 초안을 통째로 받는다', score: 2 },
+      { label: '지난 보고서 양식까지 주고 그 모양대로 받는다', score: 3 },
+    ],
+  },
+  {
+    id: 'refine',
+    title: 'AI가 준 결과가 70점짜리다. 나는?',
+    options: [
+      { label: '안 쓰고 닫는다', score: 0 },
+      { label: '쓸 만한 부분만 복사해서 내가 마무리한다', score: 1 },
+      { label: '"다시 해 줘"라고 한다', score: 2 },
+      { label: '어디가 왜 별로인지 짚어서 고치게 한다', score: 3 },
+    ],
+  },
+  {
+    id: 'verify',
+    title: 'AI가 쓴 글에 판례 번호와 날짜가 들어 있다. 나는?',
+    options: [
+      { label: '그럴듯하니 그대로 쓴다', score: 0 },
+      { label: 'AI에게 "이거 확실해?"라고 다시 묻는다', score: 1 },
+      { label: '찜찜하니 그 부분만 빼고 쓴다', score: 2 },
+      { label: '원문을 찾아 맞는지 확인하고 쓴다', score: 3 },
     ],
   },
   {
     id: 'made',
-    title: 'AI로 만들어 실제로 쓴 것 중 가장 큰 것은?',
+    title: 'AI로 받은 것 중 실제 업무에 써 본 가장 큰 것은?',
     options: [
       { label: '아직 없다', score: 0 },
-      { label: '문서·메일 초안', score: 1 },
-      { label: '엑셀 서식, 이미지, 보고서', score: 2 },
-      { label: '내가 쓰는 프로그램이나 자동화', score: 3 },
+      { label: '답변이나 문장', score: 1 },
+      { label: '문서·표·이미지 같은 파일', score: 2 },
+      { label: '매번 쓰는 도구나 프로그램', score: 3 },
     ],
   },
   {
-    id: 'vibe',
-    title: '"바이브코딩"이라는 말, 어느 정도 아나요?',
+    id: 'know',
+    title: '다음 중 AI가 가장 틀리기 쉬운 일은?',
     options: [
-      { label: '오늘 처음 듣는다', score: 0 },
-      { label: '들어는 봤다', score: 1 },
-      { label: '한 번 따라 해 봤다', score: 2 },
-      { label: '만든 걸 실제로 쓰고 있다', score: 3 },
+      { label: '긴 회의록 요약하기', score: 0 },
+      { label: '고객 안내문 말투 다듬기', score: 0 },
+      { label: '특정 판례의 번호와 날짜 대기', score: 3 },
+      { label: '엑셀 수식 만들기', score: 0 },
+    ],
+  },
+  {
+    id: 'meh',
+    title: 'AI 답을 보고 "뻔하다, 별거 없네" 싶었던 적이 있나요?',
+    noScore: true,
+    options: [
+      { label: '자주 그렇다', meh: true },
+      { label: '가끔 그렇다', meh: true },
+      { label: '거의 없다' },
+      { label: '써 본 게 적어서 모르겠다' },
     ],
   },
   {
@@ -115,7 +152,7 @@ export const LEVELS = [
   },
 ];
 
-export const MAX_SCORE = 21;
+export const MAX_SCORE = 24;
 
 // 방 코드 기본값: 한국 날짜 YYMMDD. 강사 화면 QR에는 방 코드가 붙어 나간다.
 export function defaultRoom(now = Date.now()) {
@@ -123,21 +160,24 @@ export function defaultRoom(now = Date.now()) {
   return d.toISOString().slice(2, 10).replace(/-/g, '');
 }
 
-// answers: { freq: 0..3, uses: ['write', ...], paid: 0..3, prompt, retry, made, vibe, wish: '...' }
+// 써 본 기능 개수 → 점수: 0개 0 / 1~2개 1 / 3~4개 2 / 5개 이상 3
+function countScore(n) { return n >= 5 ? 3 : n >= 3 ? 2 : n >= 1 ? 1 : 0; }
+
+// answers: { freq: 0..3, paid, feats: ['file', ...], ctx, delegate, refine, verify, made, know, meh, wish: '...' }
 export function grade(answers) {
   const a = answers || {};
   let score = 0;
   for (const q of QUESTIONS) {
-    if (q.text) continue;
+    if (q.text || q.noScore) continue;
     if (q.multi) {
-      const picked = q.options.filter((o) => (a[q.id] || []).includes(o.key));
-      score += picked.reduce((m, o) => Math.max(m, o.score), 0);
+      const picked = q.options.filter((o) => !o.exclusive && (a[q.id] || []).includes(o.key));
+      score += q.scoreBy === 'count' ? countScore(picked.length) : picked.reduce((m, o) => Math.max(m, o.score || 0), 0);
     } else {
       const o = q.options[a[q.id]];
-      if (o) score += o.score;
+      if (o) score += o.score || 0;
     }
   }
-  const level = score >= 16 ? 3 : score >= 10 ? 2 : score >= 5 ? 1 : 0;
+  const level = score >= 20 ? 3 : score >= 13 ? 2 : score >= 6 ? 1 : 0;
   return { score, level };
 }
 
@@ -164,6 +204,7 @@ export function isPaid(answers) {
   return !!q.options[answers?.paid]?.paid;
 }
 
-export function useLabel(key) {
-  return QUESTIONS.find((x) => x.id === 'uses').options.find((o) => o.key === key)?.label || key;
+export function isMeh(answers) {
+  const q = QUESTIONS.find((x) => x.id === 'meh');
+  return !!q.options[answers?.meh]?.meh;
 }

@@ -117,7 +117,7 @@ input{font:inherit}
   <section class="screen on" id="intro">
     <div class="brand"><i>AI</i>생성형 AI 활용 업무 보조 바이브코딩</div>
     <div class="hero">
-      <span class="kicker">8문항 · 1분</span>
+      <span class="kicker">11문항 · 2분</span>
       <h1>나의 AI 활용<br>등급은?</h1>
       <p>지금 AI를 어디까지 쓰고 있는지 확인해 봐요.<br>결과는 강사 화면에 실시간으로 모여요.</p>
     </div>
@@ -242,7 +242,7 @@ function renderQ() {
 
   const picked = q.multi ? (a[q.id] || []) : a[q.id];
   const on = (o, i) => (q.multi ? picked.includes(o.key) : picked === i);
-  $('qbody').innerHTML = `<div class="${q.multi ? 'grid2' : 'opts'}">${q.options.map((o, i) =>
+  $('qbody').innerHTML = `<div class="${q.multi && !q.oneCol ? 'grid2' : 'opts'}">${q.options.map((o, i) =>
     `<button class="opt${q.multi ? ' multi' : ''}${on(o, i) ? ' on' : ''}" data-i="${i}"><span class="mk">${CHECK}</span><span>${esc(o.label)}</span></button>`).join('')}</div>`;
 
   if (q.multi) {
