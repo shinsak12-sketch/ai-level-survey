@@ -80,7 +80,7 @@ mark.ca-hl{background:#FFE58A;color:inherit;border-radius:.2em;padding:0}
 .ca-step:last-child::before{display:none}
 .ca-step .no{width:2.4em;height:2.4em;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-weight:900;font-size:.85em;position:relative;z-index:1}
 .ca-step .lab{font-size:.74em;font-weight:900;color:var(--coral);margin-bottom:.3em}
-.ca-step .who{display:grid;gap:.4em}
+.ca-step .ppl{display:grid;gap:.4em}
 .ca-step .ca-card{display:flex;align-items:center;justify-content:space-between;gap:.5em;padding:.65em .8em}
 .ca-step .nm{font-weight:900;font-size:.92em}
 .ca-step .nm small{display:block;font-weight:700;color:var(--sub);font-size:.8em;margin-top:.1em}

@@ -255,7 +255,7 @@
       else {
         var steps = {}; chain.forEach(function (x) { (steps[x.data.step] = steps[x.data.step] || []).push(x); });
         h += '<div class="ca-chain">' + Object.keys(steps).sort(function (a, b) { return a - b; }).map(function (s) {
-          return '<div class="ca-step"><span class="no">' + s + '차</span><div><div class="lab">' + (s === '1' ? '가장 먼저' : (s - 1) + '차가 연락') + '</div><div class="who">' +
+          return '<div class="ca-step"><span class="no">' + s + '차</span><div><div class="lab">' + (s === '1' ? '가장 먼저' : (s - 1) + '차가 연락') + '</div><div class="ppl">' +
             steps[s].map(function (x) {
               return '<div class="ca-card"><div class="nm">' + esc(x.data.name) + '<small>' + esc(x.data.role) + '</small></div>' +
                 (x.data.phone ? '<a class="ca-call" href="' + tel(x.data.phone) + '">' + svg('phone') + esc(x.data.phone) + '</a>' : '') + '</div>';
