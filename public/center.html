@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#4338CA">
+<title>센터원 · 업무 공유</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%234338CA'/%3E%3Ctext x='32' y='42' font-size='26' font-family='sans-serif' font-weight='800' fill='white' text-anchor='middle'%3EC1%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="/center-app.css">
+<style>
+  html,body{margin:0;height:100%;background:#E9E7F2}
+  #app{max-width:520px;margin:0 auto;height:100%;height:100dvh;font-size:16px;box-shadow:0 0 40px rgba(30,20,80,.12)}
+  @media (min-width:560px){#app{font-size:17px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="/center-app.js"></script>
+<script>
+  var room = (new URLSearchParams(location.search).get('room') || 'main').replace(/[^0-9A-Za-z가-힣_-]/g, '').slice(0, 32) || 'main';
+  CenterApp.mount(document.getElementById('app'), { mode: 'live', room: room, api: '/api/center' });
+</script>
+</body>
+</html>
