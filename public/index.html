@@ -40,9 +40,6 @@ input{font:inherit}
 .field label small{font-weight:500;color:var(--muted)}
 .input{width:100%;height:52px;border-radius:14px;border:1.5px solid var(--line);background:var(--card);padding:0 16px;font-size:16px;outline:none;transition:border-color .15s}
 .input:focus{border-color:var(--accent)}
-.groups{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
-.groups button{height:46px;border-radius:12px;background:var(--card);border:1.5px solid var(--line);font-weight:700;font-size:15px;transition:all .15s}
-.groups button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .spacer{flex:1;min-height:20px}
 .cta{width:100%;height:56px;border-radius:16px;background:var(--accent);color:#fff;font-size:17px;font-weight:700;box-shadow:0 8px 20px -8px rgba(91,63,209,.6);transition:transform .1s,opacity .15s}
 .cta:active{transform:scale(.98)}
@@ -129,10 +126,6 @@ input{font:inherit}
       <label for="name">닉네임 <small>(선택 · 화면에 뜰 수 있어요)</small></label>
       <input class="input" id="name" maxlength="12" placeholder="예: 대물왕" autocomplete="off">
     </div>
-    <div class="field">
-      <label>우리 조</label>
-      <div class="groups" id="groups"></div>
-    </div>
     <div class="spacer"></div>
     <button class="cta" id="start">진단 시작</button>
   </section>
@@ -187,7 +180,7 @@ input{font:inherit}
 </div>
 
 <script type="module">
-import { QUESTIONS, LEVELS, GROUPS, MAX_SCORE, grade, defaultRoom } from './survey.js';
+import { QUESTIONS, LEVELS, MAX_SCORE, grade, defaultRoom } from './survey.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -199,7 +192,7 @@ const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&
 function load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch { return {}; } }
 function save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} }
 
-const state = Object.assign({ cid: null, name: '', group: null, answers: {}, result: null }, load());
+const state = Object.assign({ cid: null, name: '', answers: {}, result: null }, load());
 if (!state.cid) state.cid = (crypto.randomUUID?.() || `${Date.now()}-${Math.random()}`).replace(/[^0-9a-z-]/gi, '');
 save(state);
 let idx = 0;
@@ -211,20 +204,9 @@ function show(id) {
 
 // ---------- 시작 화면
 $('ladder').innerHTML = LEVELS.map((l) => `<div><i class="dot" style="background:${l.light}"></i><b>Lv.${l.lv}</b><span>${l.name}</span></div>`).join('');
-$('groups').innerHTML = Array.from({ length: GROUPS }, (_, i) => `<button data-g="${i + 1}">${i + 1}조</button>`).join('');
 $('name').value = state.name || '';
-function paintGroups() {
-  document.querySelectorAll('#groups button').forEach((b) => b.classList.toggle('on', Number(b.dataset.g) === state.group));
-  $('start').disabled = !state.group;
-  $('start').textContent = state.group ? '진단 시작' : '조를 골라 주세요';
-}
-$('groups').addEventListener('click', (e) => {
-  const b = e.target.closest('button'); if (!b) return;
-  state.group = Number(b.dataset.g); save(state); paintGroups();
-});
 $('name').addEventListener('input', () => { state.name = $('name').value.trim(); save(state); });
 $('start').addEventListener('click', () => { idx = 0; renderQ(); show('quiz'); });
-paintGroups();
 
 // ---------- 문항
 const WISH_EXAMPLES = ['보고서 쓰기', '서류 정리', '전화 응대 기록', '견적 검토', '엑셀 취합', '메일 답장'];
@@ -316,7 +298,7 @@ async function submit() {
     const res = await fetch('/api/submit', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ room, cid: state.cid, name: state.name, group: state.group, answers: state.answers }),
+      body: JSON.stringify({ room, cid: state.cid, name: state.name, answers: state.answers }),
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || '서버 오류');
@@ -342,7 +324,7 @@ function renderResult() {
   const L = LEVELS[level];
   $('rcHead').style.background = `linear-gradient(135deg, ${L.light}, ${LEVELS[Math.min(3, level + 1)].light} 140%)`;
   if (level === 0) $('rcHead').style.background = `linear-gradient(135deg, #8a7fd8, #6f62c8)`;
-  $('who').textContent = `${state.group ? `${state.group}조 ` : ''}${state.name || '익명'}님의 등급`;
+  $('who').textContent = `${state.name || '익명'}님의 등급`;
   $('lv').innerHTML = `Lv.${level}<small>${L.name}</small>`;
   $('tt').textContent = L.title;
   $('goal').style.display = level >= 2 ? '' : 'none';

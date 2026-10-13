@@ -55,7 +55,7 @@ main{flex:1;min-height:0;margin-top:40px}
 kbd{font-family:inherit;font-size:16px;font-weight:700;padding:3px 9px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);color:var(--ink2)}
 
 /* ---------- 결과 화면 */
-#board{grid-template-columns:1fr 600px;grid-template-rows:auto 1fr 196px;gap:24px}
+#board{grid-template-columns:1fr 600px;grid-template-rows:auto 1fr;gap:24px}
 .kpis{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr) 200px;gap:20px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px 26px}
 .kpi span{font-size:19px;color:var(--ink2);font-weight:600}
@@ -83,16 +83,6 @@ kbd{font-family:inherit;font-size:16px;font-weight:700;padding:3px 9px;border-ra
 .hb .t{height:22px}
 .hb .t i{display:block;height:100%;background:var(--accent);border-radius:0 6px 6px 0;width:0;transition:width .8s}
 .hb b{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
-.gpanel{grid-column:1 / -1;flex-direction:row;align-items:center;gap:40px}
-.gpanel h3{flex-direction:column;align-items:flex-start;gap:6px;width:200px;flex:none}
-.groups{display:grid;grid-template-columns:repeat(8,1fr);gap:24px;flex:1;height:100%}
-.gcol{display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto 92px auto;column-gap:12px;align-items:end;height:100%;align-content:center}
-.gcol .v{grid-column:1 / -1;font-size:22px;font-weight:800;font-variant-numeric:tabular-nums;text-align:center;margin-bottom:6px}
-.gcol .trk{grid-column:1 / -1;height:92px;display:flex;align-items:flex-end;justify-content:center;border-bottom:2px solid var(--line)}
-.gcol .col{width:48px;border-radius:8px 8px 0 0;background:var(--accent);transition:height .8s;height:0}
-.gcol .col.empty{background:var(--line)}
-.gcol .lab{font-size:19px;color:var(--ink2);font-weight:800;padding-top:8px;text-align:right}
-.gcol .n{font-size:16px;color:var(--muted);padding-top:8px}
 /* 떠넘기고 싶은 일: 아래로 흐르는 띠 */
 .ticker{position:absolute;left:0;right:0;bottom:0;height:84px;background:linear-gradient(90deg,var(--bg),transparent 6%,transparent 94%,var(--bg)),#10111e;border-top:1px solid var(--line);overflow:hidden;display:flex;align-items:center}
 .ticker .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 26px 0 72px;background:#10111e;font-size:19px;font-weight:800;color:var(--goal);box-shadow:20px 0 20px #10111e}
@@ -151,7 +141,6 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
         <div class="levels" id="levels"></div>
       </div>
       <div class="panel"><h3>주로 쓰는 곳 <small>복수 응답 · 명</small></h3><div class="hbars" id="uses"></div></div>
-      <div class="panel gpanel"><h3>조별 평균 등급 <small>막대 높이 = Lv.0~3</small></h3><div class="groups" id="groups"></div></div>
     </section>
   </main>
 
@@ -264,7 +253,7 @@ function render(d, force) {
     seen.add(`${r.at}|${r.name}|${r.grp}`);
     const el = document.createElement('div');
     el.className = 'chip';
-    el.innerHTML = `<span class="g">${r.grp ? `${r.grp}조` : '-'}</span>${esc(r.name || '익명')}`;
+    el.innerHTML = `<span class="g">${esc((r.name || '익').slice(0, 1))}</span>${esc(r.name || '익명')}`;
     box.prepend(el);
   }
   while (box.children.length > 30) box.lastChild.remove();
@@ -296,16 +285,9 @@ function render(d, force) {
   const maxU = Math.max(1, ...uses.map((u) => u.n));
   $('uses').innerHTML = uses.map((u) => `<div class="hb"><span>${esc(u.label)}</span><div class="t"><i data-w="${(u.n / maxU) * 100}"></i></div><b>${u.n}</b></div>`).join('');
 
-  // 조별 평균 등급 (0~3 고정 축)
-  $('groups').innerHTML = d.groups.map((g) => `<div class="gcol">
-      <span class="v">${g.avg == null ? '-' : g.avg.toFixed(1)}</span>
-      <div class="trk"><div class="col" data-h="${g.avg == null ? 0 : (g.avg / 3) * 100}"></div></div>
-      <span class="lab">${g.g}조</span><span class="n">${g.n}명</span></div>`).join('');
-
   // 다음 프레임에 폭을 넣어야 애니메이션이 걸린다
   requestAnimationFrame(() => requestAnimationFrame(() => {
     document.querySelectorAll('.fill,.hb i').forEach((el) => { el.style.width = `${el.dataset.w}%`; });
-    document.querySelectorAll('.gcol .col').forEach((el) => { el.style.height = `${el.dataset.h}%`; });
   }));
   renderTicker(d);
 }
