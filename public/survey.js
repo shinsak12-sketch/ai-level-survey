@@ -34,6 +34,23 @@ export const QUESTIONS = [
     ],
   },
   {
+    // 추가 질문: 거의 안 쓰거나 한 달에 몇 번, 또는 '안 쓴다'를 고른 사람에게만 나온다
+    id: 'why', title: '자주 안 쓰는 이유는?', hint: '해당하는 것 모두', multi: true, oneCol: true, headline: '자주 안 쓰는 이유',
+    when: (a) => a.freq === 0 || a.freq === 1 || (a.ai || []).includes('none'),
+    whenNote: '거의 안 쓰거나 가끔 쓰는 사람에게만 물었어요',
+    options: [
+      { key: 'meh', label: '답이 뻔해서 실망했다', short: '답이 뻔해서 실망' },
+      { key: 'wrong', label: '틀린 답 · 지어낸 답이 나와서', short: '틀린 답이 나와서' },
+      { key: 'what', label: '뭘 시켜야 할지 모르겠다', short: '뭘 시킬지 몰라서' },
+      { key: 'hard', label: '쓰는 법이 어렵고 귀찮다', short: '쓰는 법이 어려워서' },
+      { key: 'faster', label: '내가 직접 하는 게 더 빠르다', short: '직접 하는 게 빨라서' },
+      { key: 'secure', label: '회사 자료를 넣기 걱정된다(보안)', short: '보안이 걱정돼서' },
+      { key: 'cost', label: '유료가 비싸다', short: '유료가 비싸서' },
+      { key: 'need', label: '딱히 필요를 못 느낀다', short: '필요를 못 느껴서' },
+      { key: 'etc', label: '기타' },
+    ],
+  },
+  {
     id: 'since', title: 'AI를 처음 써 본 건 언제인가요?', headline: '처음 써 본 때',
     options: [
       { label: '2023년 이전' },
@@ -101,6 +118,11 @@ export const QUESTIONS = [
 
 export const CHART_QS = QUESTIONS.filter((q) => !q.text);
 
+// 이 사람에게 나오는 문항인지 (when 이 있는 추가 질문은 앞 답에 따라 나온다)
+export function asked(q, answers) {
+  return !q.when || !!q.when(answers || {});
+}
+
 // 방 코드 기본값: 한국 날짜 YYMMDD. 강사 화면 QR에는 방 코드가 붙어 나간다.
 export function defaultRoom(now = Date.now()) {
   const d = new Date(now + 9 * 3600e3);
@@ -112,7 +134,9 @@ export function clean(answers) {
   const a = answers || {};
   const out = {};
   for (const q of QUESTIONS) {
-    if (q.text) {
+    if (!asked(q, out)) {
+      out[q.id] = q.multi ? [] : null;
+    } else if (q.text) {
       out[q.id] = String(a[q.id] || '').replace(/\s+/g, ' ').trim().slice(0, q.max);
     } else if (q.multi) {
       const keys = q.options.map((o) => o.key);

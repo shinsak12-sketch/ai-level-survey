@@ -121,7 +121,7 @@ input{font:inherit}
   <section class="screen on" id="intro">
     <div class="brand"><i>AI</i>생성형 AI 활용 업무 보조 바이브코딩</div>
     <div class="hero">
-      <span class="kicker">9문항 · 1분</span>
+      <span class="kicker">10문항 안팎 · 1분</span>
       <h1>우리는 AI를<br>어떻게 쓰고 있을까?</h1>
       <p>정답도 점수도 없어요. 평소 쓰는 그대로 골라 주세요.<br>결과는 강사 화면에 실시간으로 모여요.</p>
     </div>
@@ -173,7 +173,7 @@ input{font:inherit}
 </div>
 
 <script type="module">
-import { QUESTIONS, CHART_QS, defaultRoom } from './survey.js';
+import { QUESTIONS, CHART_QS, defaultRoom, asked } from './survey.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -203,13 +203,16 @@ $('start').addEventListener('click', () => { idx = 0; renderQ(); show('quiz'); }
 // ---------- 문항
 const WISH_EXAMPLES = ['보고서 쓰기', '서류 정리', '전화 응대 기록', '견적 검토', '엑셀 취합', '메일 답장'];
 
+// 앞 답에 따라 추가 질문이 끼어들 수 있어서, 번호는 지금 보이는 문항 기준으로 센다
 function renderQ() {
   const q = QUESTIONS[idx];
   const a = state.answers;
-  $('barFill').style.width = `${(idx / QUESTIONS.length) * 100}%`;
-  $('count').textContent = `${idx + 1}/${QUESTIONS.length}`;
+  const vis = QUESTIONS.filter((x) => asked(x, a));
+  const no = vis.indexOf(q);
+  $('barFill').style.width = `${(no / vis.length) * 100}%`;
+  $('count').textContent = `${no + 1}/${vis.length}`;
   $('prev').disabled = false;
-  $('qn').textContent = `Q${idx + 1}`;
+  $('qn').textContent = q.when ? `Q${no + 1} · 추가 질문` : `Q${no + 1}`;
   $('qt').textContent = q.title;
   $('qh').textContent = q.hint || '';
   const next = $('next');
@@ -266,12 +269,16 @@ $('qbody').addEventListener('click', (e) => {
 });
 $('next').addEventListener('click', advance);
 $('prev').addEventListener('click', () => {
-  if (idx === 0) { show('intro'); return; }
-  idx--; renderQ();
+  let i = idx - 1;
+  while (i >= 0 && !asked(QUESTIONS[i], state.answers)) i--;
+  if (i < 0) { show('intro'); return; }
+  idx = i; renderQ();
 });
 
 function advance() {
-  if (idx < QUESTIONS.length - 1) { idx++; renderQ(); window.scrollTo(0, 0); return; }
+  let i = idx + 1;
+  while (i < QUESTIONS.length && !asked(QUESTIONS[i], state.answers)) i++;
+  if (i < QUESTIONS.length) { idx = i; renderQ(); window.scrollTo(0, 0); return; }
   $('barFill').style.width = '100%';
   submit();
 }
@@ -319,7 +326,7 @@ async function renderResult() {
   const a = state.answers;
   const rows = [];
   for (const q of CHART_QS) {
-    const t = d.q[q.id]; if (!t || !t.n) continue;
+    const t = d.q[q.id]; if (!t || !t.n || !asked(q, a)) continue;
     const picks = q.multi ? q.options.map((o, i) => [o, i]).filter(([o]) => (a[q.id] || []).includes(o.key)).slice(0, 3)
       : (q.options[a[q.id]] ? [[q.options[a[q.id]], a[q.id]]] : []);
     for (const [o, i] of picks) {
