@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI 활용 등급 진단 · 강사 화면</title>
+<title>우리의 AI 사용 설문 · 강사 화면</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235b3fd1'/%3E%3Ctext x='32' y='43' font-size='28' font-family='sans-serif' font-weight='800' fill='white' text-anchor='middle'%3EAI%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <script src="/vendor/qrcode.js"></script>
@@ -54,35 +54,45 @@ main{flex:1;min-height:0;margin-top:40px}
 .hint{font-size:20px;color:var(--muted);display:flex;align-items:center;gap:10px}
 kbd{font-family:inherit;font-size:16px;font-weight:700;padding:3px 9px;border-radius:7px;background:var(--panel2);border:1px solid var(--line);color:var(--ink2)}
 
-/* ---------- 결과 화면 */
-#board{grid-template-columns:1fr 600px;grid-template-rows:auto 1fr;gap:24px}
-.kpis{grid-column:1 / -1;display:grid;grid-template-columns:repeat(4,1fr) 200px;gap:20px}
-.kpi{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:18px 26px}
-.kpi span{font-size:19px;color:var(--ink2);font-weight:600}
-.kpi b{display:block;font-size:50px;font-weight:900;letter-spacing:-.03em;margin-top:6px;font-variant-numeric:tabular-nums}
-.kpi b small{font-size:24px;font-weight:700;color:var(--muted);margin-left:6px;letter-spacing:0}
-.miniqr{background:#fff;border-radius:24px;display:grid;place-items:center;padding:14px}
-.miniqr canvas{width:120px;height:120px;image-rendering:pixelated}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:28px;padding:24px 32px;min-height:0;display:flex;flex-direction:column}
-.panel h3{font-size:24px;font-weight:800;display:flex;align-items:baseline;justify-content:space-between}
-.panel h3 small{font-size:17px;font-weight:600;color:var(--muted)}
-/* 등급 분포: 가로 막대, 이름·인원·비율 직접 표기 */
-.levels{flex:1;display:flex;flex-direction:column;justify-content:space-around;margin-top:8px}
-.lvrow{display:grid;grid-template-columns:210px 1fr 150px;align-items:center;gap:22px;position:relative}
-.lvname b{display:block;font-size:20px;color:var(--muted);font-weight:800}
-.lvname span{font-size:30px;font-weight:800}
-.track{height:52px;border-radius:0 12px 12px 0;position:relative}
-.track:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--line)}
-.fill{height:100%;border-radius:0 12px 12px 0;width:0;transition:width .8s cubic-bezier(.2,.8,.2,1);min-width:0}
-.lvval{text-align:right;font-variant-numeric:tabular-nums}
-.lvval b{font-size:44px;font-weight:900}
-.lvval span{font-size:20px;color:var(--muted);font-weight:700;margin-left:6px}
-.lvrow.goal .lvname span:after{content:"오늘의 목표";font-size:14px;font-weight:800;color:#17142b;background:var(--goal);padding:4px 9px;border-radius:99px;margin-left:10px;vertical-align:6px}
-.hbars{margin-top:10px;display:flex;flex-direction:column;flex:1;justify-content:space-around}
-.hb{display:grid;grid-template-columns:230px 1fr 44px;align-items:center;gap:14px;font-size:20px;white-space:nowrap}
-.hb .t{height:22px}
-.hb .t i{display:block;height:100%;background:var(--accent);border-radius:0 6px 6px 0;width:0;transition:width .8s}
-.hb b{text-align:right;font-variant-numeric:tabular-nums;color:var(--ink2)}
+/* ---------- 결과 화면: 문항 하나씩 */
+#board{grid-template-rows:auto 1fr auto;gap:22px}
+.qhead{display:flex;justify-content:space-between;align-items:flex-start;gap:40px}
+.qn{font-size:22px;font-weight:800;color:var(--accent);letter-spacing:.04em}
+.qhead h2{font-size:60px;font-weight:900;letter-spacing:-.03em;margin-top:6px;line-height:1.15}
+.qside{display:flex;align-items:center;gap:20px;flex:none}
+.qresp{font-size:22px;color:var(--ink2);font-weight:700;text-align:right;line-height:1.5}
+.qresp b{display:block;font-size:44px;color:var(--ink);font-weight:900}
+.miniqr{background:#fff;border-radius:20px;display:grid;place-items:center;padding:12px}
+.miniqr canvas{width:110px;height:110px;image-rendering:pixelated}
+.qbody{min-height:0;display:flex;flex-direction:column;justify-content:center;gap:18px}
+.row{display:grid;grid-template-columns:420px 1fr 230px;align-items:center;gap:28px}
+.row .lab{font-size:32px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .trk{height:58px;position:relative}
+.row .trk:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--line)}
+.row .fill{height:100%;width:0;border-radius:0 14px 14px 0;background:#3a3d66;transition:width .8s cubic-bezier(.2,.8,.2,1)}
+.row.top .fill{background:var(--accent)}
+.row .val{text-align:right;font-variant-numeric:tabular-nums}
+.row .val b{font-size:50px;font-weight:900}
+.row .val span{font-size:22px;color:var(--muted);font-weight:700;margin-left:8px}
+.row.top .lab,.row.top .val b{color:#fff}
+.row:not(.top) .lab{color:var(--ink2)}
+.qbody.many{gap:10px}
+.qbody.many .row .trk{height:40px}
+.qbody.many .row .lab{font-size:26px}
+.qbody.many .row .val b{font-size:36px}
+.dots{display:flex;gap:10px;justify-content:center}
+.dots button{width:14px;height:14px;border-radius:50%;background:var(--line)}
+.dots button.on{background:var(--accent);width:40px;border-radius:99px}
+/* 요약 */
+.sum{display:grid;grid-template-columns:repeat(4,1fr);gap:20px;height:100%}
+.sc{background:var(--panel);border:1px solid var(--line);border-radius:24px;padding:22px 24px;display:flex;flex-direction:column;gap:10px;cursor:pointer}
+.sc h4{font-size:20px;color:var(--ink2);font-weight:700}
+.sc .tb{font-size:30px;font-weight:900;line-height:1.2}
+.sc .tb small{display:block;font-size:20px;color:var(--accent);font-weight:800;margin-top:4px}
+.sc .mini{display:flex;flex-direction:column;gap:6px;margin-top:auto}
+.sc .mini div{display:grid;grid-template-columns:1fr 60px;gap:8px;font-size:16px;color:var(--muted);font-weight:600}
+.sc .mini i{display:block;height:6px;border-radius:99px;background:#3a3d66;margin-top:3px}
+.empty-note{font-size:28px;color:var(--muted);margin:auto;text-align:center}
 /* 떠넘기고 싶은 일: 아래로 흐르는 띠 */
 .ticker{position:absolute;left:0;right:0;bottom:0;height:84px;background:linear-gradient(90deg,var(--bg),transparent 6%,transparent 94%,var(--bg)),#10111e;border-top:1px solid var(--line);overflow:hidden;display:flex;align-items:center}
 .ticker .lab{position:absolute;left:0;top:0;bottom:0;z-index:2;display:flex;align-items:center;padding:0 26px 0 72px;background:#10111e;font-size:19px;font-weight:800;color:var(--goal);box-shadow:20px 0 20px #10111e}
@@ -106,7 +116,7 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
   <header>
     <div class="title">
       <div class="logo">AI</div>
-      <div><h1>AI 활용 등급 진단</h1><p>생성형 AI 활용 업무 보조 바이브코딩</p></div>
+      <div><h1>우리의 AI 사용 설문</h1><p>Why not? · 생성형 AI 활용 업무 보조 바이브코딩</p></div>
     </div>
     <div class="tools">
       <span class="pill"><i class="live" id="live"></i><span id="liveTxt">실시간</span></span>
@@ -122,25 +132,19 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
       <div class="gright">
         <div class="big-k">지금까지 참여</div>
         <div class="big-n"><span id="gCount">0</span><small>명</small></div>
-        <div class="big-sub">휴대폰 카메라로 QR을 찍으면 바로 시작해요 · 11문항 2분</div>
+        <div class="big-sub">휴대폰 카메라로 QR을 찍으면 바로 시작해요 · 9문항 1분</div>
         <div class="joined" id="joined"></div>
-        <div class="hint"><kbd>Space</kbd> 결과 공개 <kbd>F</kbd> 전체 화면 <kbd>W</kbd> 한 줄 의견 숨기기</div>
+        <div class="hint"><kbd>Space</kbd> 결과 공개 <kbd>←</kbd><kbd>→</kbd> 문항 넘기기 <kbd>F</kbd> 전체 화면 <kbd>W</kbd> 한 줄 의견 숨기기</div>
       </div>
     </section>
 
     <section class="view" id="board">
-      <div class="kpis">
-        <div class="kpi"><span>참여</span><b id="kCount">0<small>명</small></b></div>
-        <div class="kpi"><span>평균 등급</span><b id="kAvg">-</b></div>
-        <div class="kpi"><span>유료 AI 사용</span><b id="kPaid">0<small>명</small></b></div>
-        <div class="kpi"><span>"뻔하다" 실망해 봤다</span><b id="kMeh">0<small>명</small></b></div>
-        <div class="miniqr"><div id="qr2"></div></div>
+      <div class="qhead">
+        <div><div class="qn" id="qN"></div><h2 id="qT"></h2></div>
+        <div class="qside"><div class="qresp" id="qR"></div><div class="miniqr"><div id="qr2"></div></div></div>
       </div>
-      <div class="panel">
-        <h3>등급 분포 <small id="lvNote"></small></h3>
-        <div class="levels" id="levels"></div>
-      </div>
-      <div class="panel"><h3>써 본 기능 <small>복수 응답 · 명</small></h3><div class="hbars" id="uses"></div></div>
+      <div class="qbody" id="qBody"></div>
+      <div class="dots" id="dots"></div>
     </section>
   </main>
 
@@ -156,7 +160,7 @@ dialog .row{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 </dialog>
 
 <script type="module">
-import { QUESTIONS, LEVELS, MAX_SCORE, defaultRoom } from './survey.js';
+import { CHART_QS, defaultRoom } from './survey.js';
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -166,6 +170,7 @@ let mode = 'gather';
 let showWish = true;
 let last = null;
 let seen = new Set();
+let page = 0; // 0..CHART_QS.length (마지막은 요약)
 
 // ---------- 화면 맞춤 (1920x1080 기준 확대·축소)
 function fit() {
@@ -201,7 +206,7 @@ function paintRoom() {
   $('url').textContent = u.host + u.pathname.replace(/\/$/, '');
   $('roomLine').textContent = `방 코드 ${room}`;
   drawQR($('qr'), 512);
-  drawQR($('qr2'), 150);
+  drawQR($('qr2'), 130);
   const p = new URLSearchParams(location.search); p.set('room', room);
   history.replaceState(null, '', `?${p}`);
 }
@@ -226,6 +231,8 @@ addEventListener('keydown', (e) => {
   if (e.code === 'Space' || e.key === 'r' || e.key === 'R') { e.preventDefault(); $('toggle').click(); }
   else if (e.key === 'f' || e.key === 'F') { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen?.(); }
   else if (e.key === 'w' || e.key === 'W') toggleWish();
+  else if (mode === 'board' && (e.key === 'ArrowRight' || e.key === 'PageDown')) { e.preventDefault(); go(page + 1); }
+  else if (mode === 'board' && (e.key === 'ArrowLeft' || e.key === 'PageUp')) { e.preventDefault(); go(page - 1); }
 });
 
 // ---------- 방 코드
@@ -242,7 +249,6 @@ function applyRoom() {
 }
 
 // ---------- 그리기
-const FEATS = QUESTIONS.find((q) => q.id === 'feats').options.filter((o) => !o.exclusive);
 
 function render(d, force) {
   $('gCount').textContent = d.count;
@@ -260,36 +266,53 @@ function render(d, force) {
 
   if (mode !== 'board' && !force) { renderTicker(d); return; }
 
-  // KPI
-  const avgLv = d.count ? d.levels.reduce((s, n, i) => s + n * i, 0) / d.count : null;
-  $('kCount').innerHTML = `${d.count}<small>명</small>`;
-  $('kAvg').innerHTML = avgLv == null ? '-' : `Lv.${avgLv.toFixed(1)}`;
-  $('kPaid').innerHTML = `${d.paid}<small>명${d.count ? ` · ${Math.round((d.paid / d.count) * 100)}%` : ''}</small>`;
-  $('kMeh').innerHTML = `${d.meh || 0}<small>명${d.mehN ? ` · ${Math.round((d.meh / d.mehN) * 100)}%` : ''}</small>`;
-  $('lvNote').textContent = d.count ? `평균 ${d.avgScore.toFixed(1)}점 / ${MAX_SCORE}점` : '';
-
-  // 등급 분포 (막대 길이 = 인원, 최대값 기준)
-  const maxLv = Math.max(1, ...d.levels);
-  $('levels').innerHTML = LEVELS.map((L) => {
-    const n = d.levels[L.lv];
-    const pct = d.count ? Math.round((n / d.count) * 100) : 0;
-    return `<div class="lvrow${L.lv === 2 ? ' goal' : ''}">
-      <div class="lvname"><b>Lv.${L.lv}</b><span>${L.name}</span></div>
-      <div class="track"><div class="fill" data-w="${(n / maxLv) * 100}" style="background:${L.dark}"></div></div>
-      <div class="lvval"><b>${n}</b><span>명 · ${pct}%</span></div></div>`;
-  }).join('');
-
-  // 써 본 기능 (많은 순)
-  const uses = FEATS.map((o) => ({ label: o.short || o.label, n: d.feats[o.key] || 0 })).sort((a, b) => b.n - a.n);
-  const maxU = Math.max(1, ...uses.map((u) => u.n));
-  $('uses').innerHTML = uses.map((u) => `<div class="hb"><span>${esc(u.label)}</span><div class="t"><i data-w="${(u.n / maxU) * 100}"></i></div><b>${u.n}</b></div>`).join('');
-
-  // 다음 프레임에 폭을 넣어야 애니메이션이 걸린다
-  requestAnimationFrame(() => requestAnimationFrame(() => {
-    document.querySelectorAll('.fill,.hb i').forEach((el) => { el.style.width = `${el.dataset.w}%`; });
-  }));
+  renderBoard(d);
   renderTicker(d);
 }
+
+let drawnPage = -1;
+function go(p) { page = Math.max(0, Math.min(CHART_QS.length, p)); if (last) renderBoard(last); }
+function pct(n, of) { return of ? Math.round((n / of) * 100) : 0; }
+function lab(o) { return o.short || o.label; }
+function renderBoard(d) {
+  $('dots').innerHTML = [...CHART_QS, null].map((q, i) => `<button class="${i === page ? 'on' : ''}" data-p="${i}" title="${q ? esc(q.headline) : '한눈에 보기'}"></button>`).join('');
+  $('qR').innerHTML = `<b>${d.count}명</b>참여`;
+  const body = $('qBody');
+  if (!d.count) { $('qN').textContent = ''; $('qT').textContent = '아직 응답이 없어요'; body.className = 'qbody'; body.innerHTML = '<div class="empty-note">QR로 참여하면 여기에 바로 모여요</div>'; return; }
+  if (page === CHART_QS.length) {
+    drawnPage = page;
+    $('qN').textContent = '한눈에 보기';
+    $('qT').textContent = '우리는 AI를 이렇게 쓰고 있습니다';
+    body.className = 'qbody';
+    body.innerHTML = '<div class="sum">' + CHART_QS.map((q, qi) => {
+      const t = d.q[q.id];
+      const ord = q.options.map((o, i) => ({ o, n: t.counts[i] })).sort((x, y) => y.n - x.n);
+      const top = ord[0];
+      return `<div class="sc" data-p="${qi}"><h4>${esc(q.headline)}</h4><div class="tb">${esc(lab(top.o))}<small>${pct(top.n, t.n)}%</small></div>
+        <div class="mini">${ord.slice(1, 3).map((x) => `<div><span>${esc(lab(x.o))}<i style="width:${pct(x.n, t.n)}%"></i></span><span>${pct(x.n, t.n)}%</span></div>`).join('')}</div></div>`;
+    }).join('') + '</div>';
+    return;
+  }
+  const q = CHART_QS[page];
+  const t = d.q[q.id];
+  $('qN').textContent = `Q${page + 1} / ${CHART_QS.length}${q.multi ? ' · 복수 응답' : ''}`;
+  $('qT').textContent = q.title;
+  const max = Math.max(1, ...t.counts);
+  const same = drawnPage === page; // 같은 문항을 다시 그릴 땐 0부터 다시 자라지 않게
+  drawnPage = page;
+  body.className = 'qbody' + (q.options.length > 6 ? ' many' : '');
+  body.innerHTML = q.options.map((o, i) => {
+    const n = t.counts[i];
+    return `<div class="row${n === max && n > 0 ? ' top' : ''}"><div class="lab">${esc(lab(o))}</div>
+      <div class="trk"><div class="fill" data-w="${(n / max) * 100}"${same ? ` style="width:${(n / max) * 100}%"` : ''}></div></div>
+      <div class="val"><b>${pct(n, t.n)}%</b><span>${n}명</span></div></div>`;
+  }).join('');
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    body.querySelectorAll('.fill').forEach((el) => { el.style.width = `${el.dataset.w}%`; });
+  }));
+}
+$('dots').addEventListener('click', (e) => { const b = e.target.closest('[data-p]'); if (b) go(+b.dataset.p); });
+$('qBody').addEventListener('click', (e) => { const b = e.target.closest('.sc[data-p]'); if (b) go(+b.dataset.p); });
 
 let tickerKey = '';
 function renderTicker(d) {

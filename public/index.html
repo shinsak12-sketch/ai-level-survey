@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#f6f5fb">
-<title>AI 활용 등급 진단</title>
+<title>우리의 AI 사용 설문</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235b3fd1'/%3E%3Ctext x='32' y='43' font-size='28' font-family='sans-serif' font-weight='800' fill='white' text-anchor='middle'%3EAI%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <style>
@@ -30,11 +30,6 @@ input{font:inherit}
 .hero .kicker{display:inline-block;font-size:12px;font-weight:700;color:var(--accent);background:var(--accent-soft);padding:5px 10px;border-radius:99px}
 .hero h1{font-size:34px;line-height:1.2;font-weight:800;letter-spacing:-.02em;margin:14px 0 10px}
 .hero p{font-size:15px;line-height:1.6;color:var(--ink2)}
-.ladder{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:6px 0 28px}
-.ladder div{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
-.ladder b{display:block;font-size:11px;color:var(--muted);font-weight:700}
-.ladder span{display:block;font-size:13px;font-weight:700;margin-top:2px}
-.ladder .dot{display:block;width:8px;height:8px;border-radius:50%;margin:0 auto 6px}
 .field{margin-bottom:18px}
 .field label{display:block;font-size:13px;font-weight:700;color:var(--ink2);margin-bottom:8px}
 .field label small{font-weight:500;color:var(--muted)}
@@ -88,6 +83,15 @@ input{font:inherit}
 .rc-head:before{content:"";position:absolute;right:-40px;top:-40px;width:180px;height:180px;border-radius:50%;background:rgba(255,255,255,.12)}
 .rc-head:after{content:"";position:absolute;right:30px;bottom:-60px;width:120px;height:120px;border-radius:50%;background:rgba(255,255,255,.08)}
 .rc-head .who{font-size:13px;font-weight:600;opacity:.85}
+.rc-head{background:linear-gradient(135deg,#6b4fe0,#4a2fc4)}
+.rc-head .cnt{font-size:13px;font-weight:600;opacity:.85;margin-top:6px}
+.mine{display:flex;flex-direction:column;gap:14px}
+.mrow .mq{font-size:12px;font-weight:700;color:var(--muted)}
+.mrow .ma{display:flex;align-items:center;gap:10px;margin-top:5px}
+.mrow .ma b{flex:none;font-size:15px;font-weight:800;max-width:52%}
+.mrow .mb{flex:1;height:8px;border-radius:99px;background:var(--line);overflow:hidden}
+.mrow .mb i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.mrow .mp{flex:none;font-size:13px;font-weight:800;color:var(--accent);min-width:40px;text-align:right}
 .rc-head .lv{font-size:64px;font-weight:900;line-height:1;margin-top:14px;letter-spacing:-.03em}
 .rc-head .lv small{font-size:22px;font-weight:800;margin-left:8px;letter-spacing:0}
 .rc-head .tt{font-size:19px;font-weight:700;margin-top:8px}
@@ -117,17 +121,16 @@ input{font:inherit}
   <section class="screen on" id="intro">
     <div class="brand"><i>AI</i>생성형 AI 활용 업무 보조 바이브코딩</div>
     <div class="hero">
-      <span class="kicker">11문항 · 2분</span>
-      <h1>나의 AI 활용<br>등급은?</h1>
-      <p>지금 AI를 어디까지 쓰고 있는지 확인해 봐요.<br>결과는 강사 화면에 실시간으로 모여요.</p>
+      <span class="kicker">9문항 · 1분</span>
+      <h1>우리는 AI를<br>어떻게 쓰고 있을까?</h1>
+      <p>정답도 점수도 없어요. 평소 쓰는 그대로 골라 주세요.<br>결과는 강사 화면에 실시간으로 모여요.</p>
     </div>
-    <div class="ladder" id="ladder"></div>
     <div class="field">
       <label for="name">닉네임 <small>(선택 · 화면에 뜰 수 있어요)</small></label>
       <input class="input" id="name" maxlength="12" placeholder="예: 대물왕" autocomplete="off">
     </div>
     <div class="spacer"></div>
-    <button class="cta" id="start">진단 시작</button>
+    <button class="cta" id="start">설문 시작</button>
   </section>
 
   <!-- 문항 -->
@@ -154,33 +157,23 @@ input{font:inherit}
 
   <!-- 결과 -->
   <section class="screen" id="result">
-    <div class="brand"><i>AI</i>AI 활용 등급 진단 결과</div>
+    <div class="brand"><i>AI</i>우리의 AI 사용 설문 결과</div>
     <div class="result-card">
-      <div class="rc-head" id="rcHead">
-        <span class="goal" id="goal" style="display:none">오늘의 목표 달성!</span>
+      <div class="rc-head">
         <div class="who" id="who"></div>
-        <div class="lv" id="lv"></div>
-        <div class="tt" id="tt"></div>
+        <div class="tt" id="tt">나와 같은 답을 한 사람은?</div>
+        <div class="cnt" id="cnt"></div>
       </div>
-      <div class="rc-body">
-        <p class="desc" id="desc"></p>
-        <div class="steps" id="steps"></div>
-        <div class="steps-lab" id="stepsLab"></div>
-        <div class="stats">
-          <div class="stat"><b id="sScore"></b><span>활용 점수</span></div>
-          <div class="stat"><b id="sRank"></b><span id="sRankLab">참가자 중</span></div>
-        </div>
-        <div class="next"><b>NEXT</b><span id="nextTip"></span></div>
-      </div>
+      <div class="rc-body"><div class="mine" id="mine"></div></div>
     </div>
     <div class="spacer"></div>
-    <button class="ghost" id="again">다시 진단하기</button>
-    <div class="foot">강사 화면을 봐 주세요 👀</div>
+    <button class="ghost" id="again">다시 답하기</button>
+    <div class="foot">강사 화면을 봐 주세요 👀 · 숫자는 사람이 늘수록 바뀌어요</div>
   </section>
 </div>
 
 <script type="module">
-import { QUESTIONS, LEVELS, MAX_SCORE, grade, defaultRoom } from './survey.js';
+import { QUESTIONS, CHART_QS, defaultRoom } from './survey.js';
 
 const $ = (id) => document.getElementById(id);
 const params = new URLSearchParams(location.search);
@@ -203,7 +196,6 @@ function show(id) {
 }
 
 // ---------- 시작 화면
-$('ladder').innerHTML = LEVELS.map((l) => `<div><i class="dot" style="background:${l.light}"></i><b>Lv.${l.lv}</b><span>${l.name}</span></div>`).join('');
 $('name').value = state.name || '';
 $('name').addEventListener('input', () => { state.name = $('name').value.trim(); save(state); });
 $('start').addEventListener('click', () => { idx = 0; renderQ(); show('quiz'); });
@@ -289,7 +281,7 @@ async function submit() {
   show('loading');
   $('err').classList.remove('on');
   $('retrySend').style.display = 'none';
-  const msgs = ['답변을 분석하고 있어요', '다른 참가자와 비교하는 중', '등급을 매기고 있어요'];
+  const msgs = ['답변을 보내고 있어요', '다른 참가자와 비교하는 중', '결과를 모으고 있어요'];
   let m = 0;
   $('loadMsg').textContent = msgs[0];
   const t = setInterval(() => { m = (m + 1) % msgs.length; $('loadMsg').textContent = msgs[m]; }, 700);
@@ -305,8 +297,7 @@ async function submit() {
     await wait;
     state.result = data;
     save(state);
-    renderResult();
-    show('result');
+    showResult();
   } catch (e) {
     $('err').textContent = `전송하지 못했어요. 와이파이·데이터를 확인하고 다시 눌러 주세요. (${e.message})`;
     $('err').classList.add('on');
@@ -317,37 +308,37 @@ async function submit() {
 }
 $('retrySend').addEventListener('click', submit);
 
-// ---------- 결과
-function renderResult() {
-  const r = state.result;
-  const { score, level } = r.level != null ? r : grade(state.answers);
-  const L = LEVELS[level];
-  $('rcHead').style.background = `linear-gradient(135deg, ${L.light}, ${LEVELS[Math.min(3, level + 1)].light} 140%)`;
-  if (level === 0) $('rcHead').style.background = `linear-gradient(135deg, #8a7fd8, #6f62c8)`;
-  $('who').textContent = `${state.name || '익명'}님의 등급`;
-  $('lv').innerHTML = `Lv.${level}<small>${L.name}</small>`;
-  $('tt').textContent = L.title;
-  $('goal').style.display = level >= 2 ? '' : 'none';
-  $('desc').textContent = L.desc;
-  $('steps').innerHTML = LEVELS.map((x) => `<div style="${x.lv <= level ? `background:${x.light}` : ''}"></div>`).join('');
-  $('stepsLab').innerHTML = LEVELS.map((x) => `<span class="${x.lv === level ? 'me' : ''}">${x.name}${x.lv === 2 ? ' 🎯' : ''}</span>`).join('');
-  $('sScore').textContent = `${score} / ${MAX_SCORE}`;
-  if (r.count > 1) {
-    const pct = Math.max(1, Math.round(((r.count - r.below) / r.count) * 100));
-    $('sRank').textContent = `상위 ${pct}%`;
-    $('sRankLab').innerHTML = `지금까지 ${r.count}명 중<br>같은 등급 ${r.same}명`;
-  } else {
-    $('sRank').textContent = '1등 참가';
-    $('sRankLab').textContent = '가장 먼저 참여했어요';
+// ---------- 결과: 내 답과 같은 답을 한 사람 비율 (몇 초마다 새로 계산)
+let resTimer = null;
+async function renderResult() {
+  $('who').textContent = `${state.name || '익명'}님의 답`;
+  let d = null;
+  try { d = await (await fetch(`/api/stats?room=${encodeURIComponent(room)}`, { cache: 'no-store' })).json(); } catch {}
+  if (!d || !d.q) return;
+  $('cnt').textContent = `지금까지 ${d.count}명 참여`;
+  const a = state.answers;
+  const rows = [];
+  for (const q of CHART_QS) {
+    const t = d.q[q.id]; if (!t || !t.n) continue;
+    const picks = q.multi ? q.options.map((o, i) => [o, i]).filter(([o]) => (a[q.id] || []).includes(o.key)).slice(0, 3)
+      : (q.options[a[q.id]] ? [[q.options[a[q.id]], a[q.id]]] : []);
+    for (const [o, i] of picks) {
+      const pct = Math.round((t.counts[i] / t.n) * 100);
+      rows.push(`<div class="mrow"><div class="mq">${esc(q.headline || q.title)}</div><div class="ma"><b>${esc(o.short || o.label)}</b><span class="mb"><i style="width:${pct}%"></i></span><span class="mp">${pct}%</span></div></div>`);
+    }
   }
-  $('nextTip').textContent = L.next;
+  $('mine').innerHTML = rows.join('');
+}
+function showResult() {
+  renderResult(); show('result');
+  clearInterval(resTimer); resTimer = setInterval(renderResult, 5000);
 }
 $('again').addEventListener('click', () => {
-  state.result = null; save(state);
+  state.result = null; save(state); clearInterval(resTimer);
   idx = 0; renderQ(); show('quiz');
 });
 
-if (state.result) { renderResult(); show('result'); }
+if (state.result) showResult();
 </script>
 </body>
 </html>
